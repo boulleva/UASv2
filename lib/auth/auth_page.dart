@@ -19,15 +19,13 @@ class _AuthPageState extends State<AuthPage> {
   bool isLogin = true;
 
   void toggleMode() {
-    setState(() {
-      isLogin = !isLogin;
-    });
+    setState(() => isLogin = !isLogin);
   }
 
   void handleAuth() async {
-    final email = emailController.text;
-    final password = passwordController.text;
-    final username = usernameController.text;
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
+    final username = usernameController.text.trim();
 
     try {
       if (isLogin) {
@@ -37,7 +35,6 @@ class _AuthPageState extends State<AuthPage> {
             .signUp(email: email, password: password, username: username);
       }
 
-      // Setelah login, pindah ke DashboardPage
       if (mounted) {
         Navigator.pushReplacement(
           context,
@@ -61,38 +58,83 @@ class _AuthPageState extends State<AuthPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(isLogin ? 'Login' : 'Sign Up')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            if (!isLogin)
-              TextField(
-                controller: usernameController,
-                decoration: const InputDecoration(labelText: 'Username'),
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                isLogin ? 'Login' : 'Sign Up',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF5FB2FF),
+                ),
               ),
-            TextField(
-              controller: emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
-              keyboardType: TextInputType.emailAddress,
-            ),
-            TextField(
-              controller: passwordController,
-              decoration: const InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: handleAuth,
-              child: Text(isLogin ? 'Login' : 'Sign Up'),
-            ),
-            TextButton(
-              onPressed: toggleMode,
-              child: Text(isLogin
-                  ? 'Don\'t have an account? Sign up'
-                  : 'Already have an account? Login'),
-            ),
-          ],
+              const SizedBox(height: 20),
+              if (!isLogin)
+                _buildTextField(
+                    controller: usernameController, label: 'Username'),
+              _buildTextField(
+                  controller: emailController,
+                  label: 'Email',
+                  keyboardType: TextInputType.emailAddress),
+              _buildTextField(
+                  controller: passwordController,
+                  label: 'Password',
+                  obscureText: true),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: handleAuth,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF5FB2FF),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                ),
+                child: Text(isLogin ? 'Login' : 'Sign Up',
+                    style: TextStyle(fontSize: 16)),
+              ),
+              TextButton(
+                onPressed: toggleMode,
+                child: Text(
+                  isLogin
+                      ? 'Don\'t have an account? Sign up'
+                      : 'Already have an account? Login',
+                  style: TextStyle(color: Color(0xFF5FB2FF)),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    bool obscureText = false,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextField(
+        controller: controller,
+        obscureText: obscureText,
+        keyboardType: keyboardType,
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Color(0xFF5FB2FF), width: 2),
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       ),
     );
